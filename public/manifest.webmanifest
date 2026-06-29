@@ -1,0 +1,17 @@
+{
+  "name": "Melov · 식물 컬렉션",
+  "short_name": "Melov",
+  "description": "사진으로 식물을 식별하고 컬렉션을 모으며 친구들과 경쟁하세요",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0e1a12",
+  "theme_color": "#1f7a4d",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
