@@ -12,6 +12,10 @@ export default function App() {
   useServerSync();
   return (
     <div className="app-shell">
+      <header className="app-bar">
+        <span className="app-bar-logo" aria-hidden="true">🌿</span>
+        <span className="app-bar-name">풀리피아</span>
+      </header>
       <main className="app-main">
         <Routes>
           <Route path="/" element={<CollectionPage />} />
