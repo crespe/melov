@@ -1,13 +1,53 @@
+import { useEffect, useState } from "react";
 import { useStore } from "../state/store";
-import { computeScore, buildLeaderboard, computeBadges, RARITY_POINTS } from "../lib/score";
+import {
+  computeScore,
+  buildLeaderboard,
+  computeBadges,
+  RARITY_POINTS,
+  type LeaderboardRow,
+} from "../lib/score";
 import { getSpecies } from "../data/plants";
+import { fetchLeaderboard, getMyUserId } from "../lib/api";
 
 export default function CompetePage() {
   const { state } = useStore();
   const { plants, profile } = state;
   const score = computeScore(plants);
-  const board = buildLeaderboard(profile.name, profile.avatar, score.total);
   const badges = computeBadges(plants, score);
+
+  // 서버 리더보드(실제 유저). 실패/빈 결과면 로컬 데모로 폴백.
+  const [serverBoard, setServerBoard] = useState<LeaderboardRow[] | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetchLeaderboard(50).then((res) => {
+      if (!alive) return;
+      if (res && res.rows.length) {
+        const myId = getMyUserId();
+        const rows: LeaderboardRow[] = res.rows.map((r) => ({
+          name: r.nickname,
+          avatar: r.avatar,
+          score: r.score,
+          isMe: !!myId && r.userId === myId,
+        }));
+        // 내가 상위 목록에 없으면 로컬 점수로 내 행을 끼워넣어 순위를 보여준다.
+        if (!rows.some((r) => r.isMe)) {
+          rows.push({ name: profile.name, avatar: profile.avatar, score: score.total, isMe: true });
+          rows.sort((a, b) => b.score - a.score);
+        }
+        setServerBoard(rows);
+      } else {
+        setServerBoard(null);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plants.length]);
+
+  const isServerBoard = serverBoard != null;
+  const board = serverBoard ?? buildLeaderboard(profile.name, profile.avatar, score.total);
   const myRank = board.findIndex((r) => r.isMe) + 1;
 
   return (
@@ -52,7 +92,11 @@ export default function CompetePage() {
             </li>
           ))}
         </ul>
-        <p className="muted small">* 라이벌은 데모용 가상 유저입니다. 서버 연동 시 실제 친구와 경쟁할 수 있어요.</p>
+        <p className="muted small">
+          {isServerBoard
+            ? "* 실제 풀리피아 유저들과의 랭킹입니다. 식물을 모으면 순위가 올라가요."
+            : "* 지금은 데모용 가상 라이벌입니다(서버 연결 대기). 연결되면 실제 유저와 경쟁해요."}
+        </p>
       </section>
 
       <section className="badges">

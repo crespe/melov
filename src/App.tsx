@@ -6,8 +6,10 @@ import PlantDetailPage from "./pages/PlantDetailPage";
 import CompetePage from "./pages/CompetePage";
 import MapPage from "./pages/MapPage";
 import ProfilePage from "./pages/ProfilePage";
+import { useServerSync } from "./lib/useServerSync";
 
 export default function App() {
+  useServerSync();
   return (
     <div className="app-shell">
       <main className="app-main">
