@@ -53,7 +53,7 @@ export default function ProfilePage() {
       </section>
 
       <section className="about">
-        <h3>Melov 정보</h3>
+        <h3>풀리피아 정보</h3>
         <p className="muted small">
           데이터는 이 기기(브라우저)에만 저장됩니다. 식별은 현재 데모용 목업이며, 추후 실제 식별
           API와 서버 계정/실시간 랭킹으로 확장할 수 있습니다.
