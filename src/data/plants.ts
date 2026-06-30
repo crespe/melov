@@ -145,6 +145,39 @@ export const SPECIES_BY_ID: Record<string, Species> = Object.fromEntries(
   SPECIES.map((s) => [s.id, s])
 );
 
+// ── 동적 종 레지스트리 ────────────────────────────────────────────
+// 실제 식별 API로 발견된, 내장 도감(SPECIES)에 없는 종을 보관한다.
+// 저장된 식물의 speciesId를 reload 후에도 해석할 수 있도록 localStorage에 영속화한다.
+const DISCOVERED_KEY = "pullipia.species.v1";
+
+function loadDiscovered(): Record<string, Species> {
+  try {
+    const raw = localStorage.getItem(DISCOVERED_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+const discovered: Record<string, Species> = loadDiscovered();
+
+/**
+ * 식별된 종을 레지스트리에 등록한다.
+ * @param persist true면 localStorage에도 저장(컬렉션에 실제 저장하는 종만 영속화 권장)
+ */
+export function registerSpecies(sp: Species, persist = false): void {
+  if (!sp?.id) return;
+  discovered[sp.id] = sp;
+  if (persist) {
+    try {
+      localStorage.setItem(DISCOVERED_KEY, JSON.stringify(discovered));
+    } catch (e) {
+      console.warn("발견 종 저장 실패:", e);
+    }
+  }
+}
+
 export function getSpecies(id: string): Species | undefined {
-  return SPECIES_BY_ID[id];
+  return SPECIES_BY_ID[id] ?? discovered[id];
 }

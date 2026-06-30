@@ -4,6 +4,7 @@ import { identifyPlant, type IdentifyResult, type IdentifyCandidate } from "../l
 import { fileToResizedDataUrl } from "../lib/image";
 import { getCurrentPosition, reverseGeocode } from "../lib/geo";
 import { uid } from "../lib/storage";
+import { registerSpecies } from "../data/plants";
 import { useStore } from "../state/store";
 import RarityTag from "../components/RarityTag";
 import type { Species } from "../types";
@@ -44,6 +45,8 @@ export default function IdentifyPage() {
 
   async function save() {
     if (!chosen) return;
+    // 식별로 발견한 종을 영속화 — reload 후에도 getSpecies()가 해석하도록.
+    registerSpecies(chosen, true);
     const now = new Date().toISOString();
     // 위치를 가져와 식물 지도에 표시 (권한 거부 시 위치 없이 저장)
     const pos = await getCurrentPosition();

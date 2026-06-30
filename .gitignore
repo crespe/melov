@@ -6,3 +6,7 @@ dist-ssr
 npm-debug.log*
 .vite
 tsconfig.tsbuildinfo
+
+# 서버 전용 식별 API 키 (커밋 금지)
+public/api/config.php
+dist/api/config.php

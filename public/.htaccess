@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /
+# 실제 파일/디렉토리(에셋, /api/*.php 등)는 그대로 서빙
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# 그 외 모든 경로는 SPA 라우팅을 위해 index.html로
+RewriteRule . /index.html [L]
