@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { IconHome, IconMap, IconCamera, IconTrophy, IconUser, type IconProps } from "./icons";
+import type { ComponentType } from "react";
 
-const TABS = [
-  { to: "/", label: "도감", icon: "🏡", end: true },
-  { to: "/map", label: "지도", icon: "🗺️", end: false },
-  { to: "/identify", label: "식별", icon: "📸", end: false },
-  { to: "/compete", label: "경쟁", icon: "🏆", end: false },
-  { to: "/me", label: "내정보", icon: "🧑‍🌾", end: false },
+const TABS: { to: string; label: string; Icon: ComponentType<IconProps>; end: boolean }[] = [
+  { to: "/", label: "도감", Icon: IconHome, end: true },
+  { to: "/map", label: "지도", Icon: IconMap, end: false },
+  { to: "/identify", label: "식별", Icon: IconCamera, end: false },
+  { to: "/compete", label: "경쟁", Icon: IconTrophy, end: false },
+  { to: "/me", label: "내정보", Icon: IconUser, end: false },
 ];
 
 export default function BottomNav() {
@@ -18,7 +20,7 @@ export default function BottomNav() {
           end={t.end}
           className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}
         >
-          <span className="nav-icon">{t.icon}</span>
+          <t.Icon className="nav-icon" />
           <span className="nav-label">{t.label}</span>
         </NavLink>
       ))}

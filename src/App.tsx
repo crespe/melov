@@ -7,13 +7,14 @@ import CompetePage from "./pages/CompetePage";
 import MapPage from "./pages/MapPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useServerSync } from "./lib/useServerSync";
+import { IconLeaf } from "./components/icons";
 
 export default function App() {
   useServerSync();
   return (
     <div className="app-shell">
       <header className="app-bar">
-        <span className="app-bar-logo" aria-hidden="true">🌿</span>
+        <IconLeaf className="app-bar-logo" width={22} height={22} />
         <span className="app-bar-name">풀리피아</span>
       </header>
       <main className="app-main">

@@ -56,8 +56,8 @@ body {
 }
 
 .app-bar-logo {
-  font-size: 20px;
-  line-height: 1;
+  display: block;
+  color: var(--primary);
 }
 
 .app-bar-name {
@@ -192,7 +192,9 @@ h3 {
   color: var(--primary);
 }
 .nav-icon {
-  font-size: 20px;
+  display: block;
+  width: 22px;
+  height: 22px;
 }
 
 /* 빈 상태 */
