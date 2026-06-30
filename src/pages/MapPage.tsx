@@ -5,6 +5,7 @@ import L from "leaflet";
 import { useStore } from "../state/store";
 import { getSpecies } from "../data/plants";
 import { formatDate } from "../lib/care";
+import { KIND_META, plantKind } from "../lib/kind";
 
 // 이모지를 마커로 쓰면 Leaflet 기본 아이콘 에셋 경로 문제를 피할 수 있다.
 function emojiIcon(emoji: string) {
@@ -57,7 +58,10 @@ export default function MapPage() {
                     <strong>{p.nickname}</strong>
                     <p className="muted small">{sp?.scientificName}</p>
                     {p.placeName && <p className="small">📍 {p.placeName}</p>}
-                    <p className="muted small">{formatDate(p.acquiredAt)} 발견</p>
+                    <p className="muted small">
+                      {KIND_META[plantKind(p)].icon} {KIND_META[plantKind(p)].label} ·{" "}
+                      {formatDate(p.acquiredAt)}
+                    </p>
                     <Link to={`/plant/${p.id}`}>상세 보기 →</Link>
                   </div>
                 </Popup>

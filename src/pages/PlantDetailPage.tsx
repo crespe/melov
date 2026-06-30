@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../state/store";
 import { getSpecies } from "../data/plants";
-import { careStatus, formatRelativeDue, formatDate } from "../lib/care";
+import { careStatus, formatRelativeDue, formatDate, formatDaysAgo } from "../lib/care";
 import { fileToResizedDataUrl } from "../lib/image";
+import { KIND_META, plantKind } from "../lib/kind";
 import type { GrowthType } from "../types";
 import RarityTag from "../components/RarityTag";
 
@@ -39,6 +40,7 @@ export default function PlantDetailPage() {
 
   const sp = getSpecies(plant.speciesId);
   const care = careStatus(plant);
+  const kind = plantKind(plant);
 
   async function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -109,6 +111,9 @@ export default function PlantDetailPage() {
           <h1>{plant.nickname}</h1>
           <p className="sci">{sp?.scientificName}</p>
           <div className="row gap">
+            <span className={"kind-badge " + kind}>
+              {KIND_META[kind].icon} {KIND_META[kind].label}
+            </span>
             {sp && <RarityTag rarity={sp.rarity} />}
             <span className="muted small">함께한 지 {daysSince(plant.acquiredAt)}일</span>
           </div>
@@ -116,29 +121,43 @@ export default function PlantDetailPage() {
         </div>
       </div>
 
-      {/* 케어 현황 */}
-      <section className="care-status">
-        <div className={"care-box" + (care.needsWater ? " warn" : "")}>
-          <span className="care-box-icon">💧</span>
-          <div>
-            <strong>물주기</strong>
-            <p className="muted small">{formatRelativeDue(care.waterDueInDays)}</p>
+      {/* 케어 현황 — 내 화분만 */}
+      {kind === "mine" ? (
+        <section className="care-status">
+          <div className={"care-box" + (care.needsWater ? " warn" : "")}>
+            <span className="care-box-icon">💧</span>
+            <div>
+              <strong>물주기</strong>
+              <p className="muted small">{formatRelativeDue(care.waterDueInDays)}</p>
+              <p className="muted tiny">마지막: {formatDaysAgo(plant.lastWaterAt)}</p>
+            </div>
+            <button className="btn primary tiny" onClick={() => quickAction("water")}>
+              💧 오늘 줬어요
+            </button>
           </div>
-          <button className="btn primary tiny" onClick={() => quickAction("water")}>
-            완료
-          </button>
-        </div>
-        <div className={"care-box" + (care.needsRepot ? " warn" : "")}>
-          <span className="care-box-icon">🪴</span>
-          <div>
-            <strong>분갈이(옮겨심기)</strong>
-            <p className="muted small">{formatRelativeDue(care.repotDueInDays)}</p>
+          <div className={"care-box" + (care.needsRepot ? " warn" : "")}>
+            <span className="care-box-icon">🪴</span>
+            <div>
+              <strong>분갈이(옮겨심기)</strong>
+              <p className="muted small">{formatRelativeDue(care.repotDueInDays)}</p>
+              <p className="muted tiny">마지막: {formatDaysAgo(plant.lastRepotAt)}</p>
+            </div>
+            <button className="btn primary tiny" onClick={() => quickAction("repot")}>
+              완료
+            </button>
           </div>
-          <button className="btn primary tiny" onClick={() => quickAction("repot")}>
-            완료
+        </section>
+      ) : (
+        <section className="wild-note">
+          🍃 밖에서 발견한 식물이에요. 키우는 화분으로 바꾸면 물주기·분갈이 알림을 받을 수 있어요.
+          <button
+            className="btn ghost small"
+            onClick={() => updatePlant(plant.id, { kind: "mine", lastWaterAt: new Date().toISOString() })}
+          >
+            내 화분으로 가져오기
           </button>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 생장 정보 요약 */}
       {sp && (

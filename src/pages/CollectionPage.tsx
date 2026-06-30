@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useStore } from "../state/store";
 import { getSpecies } from "../data/plants";
 import { computeScore } from "../lib/score";
-import { careStatus, formatRelativeDue } from "../lib/care";
+import { careStatus, formatRelativeDue, formatDate } from "../lib/care";
+import { KIND_META, plantKind } from "../lib/kind";
 import PlantThumb from "../components/PlantThumb";
 import RarityTag from "../components/RarityTag";
 
@@ -39,6 +40,7 @@ export default function CollectionPage() {
           {plants.map((p) => {
             const sp = getSpecies(p.speciesId);
             const care = careStatus(p);
+            const kind = plantKind(p);
             return (
               <li key={p.id}>
                 <Link to={`/plant/${p.id}`} className="plant-card">
@@ -46,14 +48,21 @@ export default function CollectionPage() {
                   <div className="plant-card-body">
                     <div className="plant-card-title">
                       <strong>{p.nickname}</strong>
+                      <span className={"kind-badge " + kind}>{KIND_META[kind].icon}</span>
                       {sp && <RarityTag rarity={sp.rarity} />}
                     </div>
                     <p className="muted small">{sp?.scientificName}</p>
                     <div className="care-pills">
-                      <span className={"pill" + (care.needsWater ? " warn" : "")}>
-                        💧 {formatRelativeDue(care.waterDueInDays)}
-                      </span>
-                      {care.needsRepot && <span className="pill warn">🪴 분갈이 시기</span>}
+                      {kind === "mine" ? (
+                        <>
+                          <span className={"pill" + (care.needsWater ? " warn" : "")}>
+                            💧 {formatRelativeDue(care.waterDueInDays)}
+                          </span>
+                          {care.needsRepot && <span className="pill warn">🪴 분갈이 시기</span>}
+                        </>
+                      ) : (
+                        <span className="pill">🍃 {formatDate(p.acquiredAt)} 발견</span>
+                      )}
                     </div>
                   </div>
                 </Link>

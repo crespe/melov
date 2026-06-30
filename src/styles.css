@@ -802,3 +802,85 @@ textarea {
   color: var(--danger);
   margin-top: 12px;
 }
+
+/* 저장 옵션(내 화분/발견 + 별명) */
+.save-options {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.kind-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.kind-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.kind-btn.active {
+  border-color: var(--primary);
+  color: var(--text);
+  background: rgba(46, 204, 113, 0.14);
+}
+.kind-hint {
+  margin-top: 8px;
+}
+.nickname-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+.nickname-field input {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* 화분 유형 배지 */
+.kind-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+}
+.kind-badge.mine {
+  color: var(--primary);
+  border-color: rgba(46, 204, 113, 0.4);
+  background: rgba(46, 204, 113, 0.12);
+}
+
+/* 야생 발견 안내 박스 */
+.wild-note {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}

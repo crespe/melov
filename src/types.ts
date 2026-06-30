@@ -35,9 +35,12 @@ export interface GrowthEntry {
 }
 
 /** 내 컬렉션에 저장된 식물 한 그루 */
+export type PlantKind = "mine" | "wild";
+
 export interface CollectionPlant {
   id: string;
   speciesId: string;
+  kind?: PlantKind; // 없으면 "mine"으로 간주(기존 데이터 호환)
   nickname: string;
   photo?: string; // 대표 사진 dataURL
   acquiredAt: string; // ISO

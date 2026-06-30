@@ -1,13 +1,14 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { identifyPlant, type IdentifyResult, type IdentifyCandidate } from "../lib/identify";
 import { fileToResizedDataUrl } from "../lib/image";
 import { getCurrentPosition, reverseGeocode } from "../lib/geo";
 import { uid } from "../lib/storage";
 import { registerSpecies } from "../data/plants";
+import { KIND_META } from "../lib/kind";
 import { useStore } from "../state/store";
 import RarityTag from "../components/RarityTag";
-import type { Species } from "../types";
+import type { PlantKind, Species } from "../types";
 
 type Phase = "capture" | "analyzing" | "result";
 
@@ -20,7 +21,14 @@ export default function IdentifyPage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [result, setResult] = useState<IdentifyResult | null>(null);
   const [chosen, setChosen] = useState<Species | null>(null);
+  const [kind, setKind] = useState<PlantKind>("mine");
+  const [nickname, setNickname] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  // 후보가 바뀌면 별명 기본값을 그 종의 일반명으로 맞춘다.
+  useEffect(() => {
+    if (chosen) setNickname(chosen.commonName);
+  }, [chosen]);
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -56,20 +64,22 @@ export default function IdentifyPage() {
     addPlant({
       id: uid(),
       speciesId: chosen.id,
-      nickname: chosen.commonName,
+      kind,
+      nickname: nickname.trim() || chosen.commonName,
       photo: photo ?? undefined,
       acquiredAt: now,
       lat: pos?.lat,
       lng: pos?.lng,
       placeName,
-      lastWaterAt: now,
-      lastRepotAt: now,
+      // 야생 발견은 물주기 케어가 없으므로 마지막 케어일을 두지 않는다.
+      lastWaterAt: kind === "mine" ? now : undefined,
+      lastRepotAt: kind === "mine" ? now : undefined,
       history: [
         {
           id: uid(),
           date: now,
           type: "photo",
-          note: "컬렉션에 추가됨",
+          note: kind === "mine" ? "컬렉션에 추가됨" : "발견 기록",
           photo: photo ?? undefined,
         },
       ],
@@ -82,6 +92,8 @@ export default function IdentifyPage() {
     setPhoto(null);
     setResult(null);
     setChosen(null);
+    setKind("mine");
+    setNickname("");
   }
 
   return (
@@ -144,12 +156,43 @@ export default function IdentifyPage() {
             </div>
           )}
 
+          <div className="save-options">
+            <p className="muted small">저장 옵션</p>
+            <div className="kind-toggle" role="group" aria-label="화분 유형">
+              {(["mine", "wild"] as PlantKind[]).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  className={"kind-btn" + (kind === k ? " active" : "")}
+                  onClick={() => setKind(k)}
+                >
+                  {KIND_META[k].icon} {KIND_META[k].label}
+                </button>
+              ))}
+            </div>
+            <p className="muted tiny kind-hint">
+              {kind === "mine"
+                ? "내가 키우는 화분 — 물주기·분갈이 알림을 받아요."
+                : "밖에서 발견한 식물 — 지도에 발견 기록으로 남겨요."}
+            </p>
+            <label className="nickname-field">
+              <span className="muted small">별명</span>
+              <input
+                type="text"
+                value={nickname}
+                maxLength={20}
+                placeholder={chosen.commonName}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+            </label>
+          </div>
+
           <div className="action-row">
             <button className="btn ghost" onClick={reset}>
               다시 찍기
             </button>
             <button className="btn primary" onClick={save}>
-              내 컬렉션에 저장
+              {kind === "mine" ? "내 화분에 저장" : "발견 기록 저장"}
             </button>
           </div>
         </div>

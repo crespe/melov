@@ -41,6 +41,16 @@ export function formatRelativeDue(days: number): string {
   return `${days}일 후`;
 }
 
+/** "오늘" / "어제" / "N일 전" — 마지막으로 한 날 표기. */
+export function formatDaysAgo(iso: string | undefined): string {
+  if (!iso) return "기록 없음";
+  const d = daysBetween(iso);
+  if (!isFinite(d)) return "기록 없음";
+  if (d <= 0) return "오늘";
+  if (d === 1) return "어제";
+  return `${d}일 전`;
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(iso);
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(
